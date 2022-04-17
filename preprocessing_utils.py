@@ -30,10 +30,11 @@ def standardize_data(
     """
     Runs a set of data transformation on columns not standartized by
      default - e.g "5 seconds" instead of 5 as int.
+     Missing data is being ignored and will be filled later with different utils.
     """
     for col in extract_float_cols:
-        # TODO - remove fillna after we handle nulls, this is only to make it work
-        df[col] = df[col].fillna('0.0').apply(extract_float_from_string)
+        mask = ~df[col].isna()
+        df[col][mask] = df[col][mask].apply(extract_float_from_string)
 
     for col in bool_cols:
         df[col] = df[col].apply(convert_bool_to_int)
@@ -42,9 +43,8 @@ def standardize_data(
     # Only after we extract the browser clean name, we will encode it
 
     if month_col:
-        # TODO - dont forget to handle nan
-        # TODO - remove fillna after we handle nulls, this is only to make it work
-        df[month_col] = df[month_col].fillna('May').apply(convert_month_name_to_num)
+        mask = ~df[month_col].isna()
+        df[month_col][mask] = df[month_col][mask].apply(convert_month_name_to_num)
 
     for col in categorical_cols:
         df = transform_categorical_column(df, col, categorical_encoding_method)
@@ -59,8 +59,8 @@ def parse_browser_col(df: pd.DataFrame, browser_col: str):
      a double version like in "browser" ? - browser_4_v15.
      We're under the assumption that "minor" versions like "3_v12"
      or "99.1.4" can be looked as 3 or 99 and this resolution is not importantt enough.
+     In case of missing data we add a label of unknown.
     """
-    # TODO remove this fillna when we have something better
     browser_data = df[browser_col].fillna('unknown_0')
     df['browser_name'] = browser_data.apply(lambda x: x.split('_')[0])
     df['browser_version'] = browser_data.apply(extract_browser_version)
@@ -87,8 +87,7 @@ def transform_categorical_column(
     df: pd.DataFrame, col: str,
     encoding_method: CategoricalEncoder
     ):
-    # TODO - remove fillnas
-    df[col].fillna('unknown', inplace=True)
+    df[col].fillna('other', inplace=True)
     if encoding_method == CategoricalEncoder.ONE_HOT:
         encoder = OneHotEncoder()
         encoded_col = encoder.fit_transform(df[[col]])
@@ -124,12 +123,14 @@ def extract_float_from_string(text: str) -> float:
         raise ValueError(f"String doesn't contain float in it: {text}")
     return float(nums[0])
 
-
-if __name__ == "__main__":
-    path = "/Users/mikis/Downloads/ML project files/train.csv"
-    df = pd.read_csv(path)
-    standardize_data(
-        df, EXTRACT_FLOAT_COLS, BOOL_COLS,
-        CATEGORICAL_COLS, BROWSER_COL,
-        CategoricalEncoder.ORDINAL, MONTH_COL
-        )
+#
+# if __name__ == "__main__":
+#     path = "/Users/mikis/Downloads/ML project files/train.csv"
+#     df = pd.read_csv(path)
+#     df2 = standardize_data(
+#         df, EXTRACT_FLOAT_COLS, BOOL_COLS,
+#         CATEGORICAL_COLS, BROWSER_COL,
+#         CategoricalEncoder.ORDINAL, MONTH_COL
+#         )
+#
+#     df2
