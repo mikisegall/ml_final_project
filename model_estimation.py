@@ -12,7 +12,7 @@ from sklearn.model_selection import StratifiedKFold
 
 def estimate_model_performance(model, model_name, test_data, test_labels, n_splits):
     """
-    Estimate each model version with the following output:
+    Estimate each fitted model version with the following output:
     - Print: runtime, Accuracy
     - Plot: Confusion Matrix, ROC curve for every K-Fold validation
     """
