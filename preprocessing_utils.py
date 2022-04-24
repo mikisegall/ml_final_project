@@ -12,6 +12,8 @@ MONTH_COL = 'Month'
 BROWSER_COL = 'internet_browser'
 CATEGORICAL_COLS = ['user_type', 'browser_name']
 
+# TODO - consider running normalization on some of the data (happens in PCA anyways)
+
 
 class CategoricalEncoder(enum.Enum):
     ORDINAL = 'ordinal'
