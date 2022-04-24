@@ -3,7 +3,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sn
-from sklearn.metrics import RocCurveDisplay
+from sklearn.metrics import RocCurveDisplay, mean_squared_error
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import auc
 from sklearn.metrics import confusion_matrix
@@ -18,7 +18,7 @@ def estimate_model_performance(model, model_name, test_data, test_labels, n_spli
     """
     # Run predictions and calculate runtime
     start_time = time.time()
-    predictions = model.predict(test_data, test_labels)
+    predictions = model.predict(test_data)
     end_time = time.time()
     runtime = end_time - start_time
     print(f'Model predictions runtime: {runtime}s')
@@ -26,7 +26,9 @@ def estimate_model_performance(model, model_name, test_data, test_labels, n_spli
     # Evaluate the predictions
     confusion_matrix_res = confusion_matrix(test_labels, predictions)
     accuracy = accuracy_score(test_labels, predictions)
+    mse = mean_squared_error(test_labels, predictions)
     print(f"Accuracy score: {accuracy}")
+    print(f"MSE: {mse}")
 
     plt.figure()
     sn.set(font_scale=1.4)  # for label size
@@ -54,11 +56,11 @@ def plot_roc_curve_for_k_fold(model, model_name, test_data, test_labels, n_split
     fig, ax = plt.subplots()
     for i, (train, test) in enumerate(cv.split(test_data, test_labels)):
         # Calculate ROC curve per data chunch and plot its curve
-        model.fit(test_data[train], test_labels[train])
+        model.fit(test_data.iloc[list(train)], test_labels.iloc[list(train)])
         viz = RocCurveDisplay.from_estimator(
             model,
-            test_data[test],
-            test_labels[test],
+            test_data.iloc[list(train)],
+            test_labels.iloc[list(train)],
             name="ROC fold {}".format(i),
             alpha=0.3,
             lw=1,
