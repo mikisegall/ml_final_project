@@ -35,7 +35,7 @@ def plot_zscore_changes(original_df: pd.DataFrame, new_df: pd.DataFrame):
     print(f"New amount of rows: {new_df.shape[0]}")
 
     fig, axes = plt.subplots(len(new_df.columns), 1, figsize=(10, 30))
-    fig.tight_layout(pad=1.0)
+    fig.tight_layout(pad=1.5)
     
     i=0
     for col in new_df.columns:
@@ -43,5 +43,5 @@ def plot_zscore_changes(original_df: pd.DataFrame, new_df: pd.DataFrame):
         new_df[col].hist(ax=axes[i])
         axes[i].title.set_text(col)
         i+=1
-    axes[0].legend(["Without outliers", "With outliers"])
+    axes[0].legend(["With outliers", "Without outliers"])
 
