@@ -54,6 +54,7 @@ def plot_roc_curve_for_k_fold(model, model_name, test_data, test_labels, n_split
     mean_fpr = np.linspace(0, 1, 100)
 
     fig, ax = plt.subplots()
+    plt.figure(figsize=(10,10))
     for i, (train, test) in enumerate(cv.split(test_data, test_labels)):
         # Calculate ROC curve per data chunch and plot its curve
         model.fit(test_data.iloc[list(train)], test_labels.iloc[list(train)])
