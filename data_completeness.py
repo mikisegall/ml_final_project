@@ -65,8 +65,7 @@ def fill_special_cols(df: pd.DataFrame):
     df['A'] = df['A'].astype(float)
 
     df['C'] = df['C'].str.extract('(\d+)', expand=False)
-    df['C'] = df['C'].fillna(df['C'].mode())
-    df['C'] = df['C'].fillna(200) #TODO: figure out why it isnt filled without the actual number.
+    df['C'] = df['C'].fillna(df['C'].mode()[0])
     df['C'] = df['C'].astype(float)
 
     df["D"] = df["D"].fillna(D_FILLNA_VAL)

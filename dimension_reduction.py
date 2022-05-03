@@ -8,16 +8,6 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from data_completeness import DUR_COL_DICT
-from data_completeness import INT_COLS
-from data_completeness import fill_missing_data
-from preprocessing_utils import BOOL_COLS
-from preprocessing_utils import BROWSER_COL
-from preprocessing_utils import CATEGORICAL_COLS
-from preprocessing_utils import CategoricalEncoder
-from preprocessing_utils import EXTRACT_FLOAT_COLS
-from preprocessing_utils import MONTH_COL
-from preprocessing_utils import standardize_data
 
 PCA_EXPLAINED_VARIANCE = 0.99
 # TODO - I Used RMSE and I'm not sure it is the best metric, we can reconsider.
@@ -108,18 +98,18 @@ def get_rmse_for_best_n_features(x_train, y_train, x_test,
     return rmse, features_list
 
 
-if __name__ == "__main__":
-    path = "/Users/mikis/Downloads/ML project files/train.csv"
-    df = pd.read_csv(path)
-    std_df = standardize_data(
-        df, EXTRACT_FLOAT_COLS, BOOL_COLS, CATEGORICAL_COLS, BROWSER_COL,
-        CategoricalEncoder.ORDINAL, MONTH_COL
-    )
-    filled_df = fill_missing_data(std_df, INT_COLS, DUR_COL_DICT)
-    filled_df.dropna(inplace=True)  # TODO - temp solution to make it run
-    y = filled_df.pop('purchase')
-    x_train, x_test, y_train, y_test = train_test_split(
-        filled_df, y, test_size=0.2, random_state=42, shuffle=True
-    )
-    compare_pca_and_forward_selection(x_train, y_train, x_test, y_test)
+#if __name__ == "__main__":
+ #   path = "/Users/mikis/Downloads/ML project files/train.csv"
+  #  df = pd.read_csv(path)
+ #   std_df = standardize_data(
+  #      df, EXTRACT_FLOAT_COLS, BOOL_COLS, CATEGORICAL_COLS, BROWSER_COL,
+   #     CategoricalEncoder.ORDINAL, MONTH_COL
+    #)
+    #filled_df = fill_missing_data(std_df, INT_COLS, DUR_COL_DICT)
+    #filled_df.dropna(inplace=True)  # TODO - temp solution to make it run
+    #y = filled_df.pop('purchase')
+    #x_train, x_test, y_train, y_test = train_test_split(
+    #    filled_df, y, test_size=0.2, random_state=42, shuffle=True
+    #)
+    #compare_pca_and_forward_selection(x_train, y_train, x_test, y_test)
 
