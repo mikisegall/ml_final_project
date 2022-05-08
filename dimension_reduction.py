@@ -9,8 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 
-PCA_EXPLAINED_VARIANCE = 0.99
-# TODO - I Used RMSE and I'm not sure it is the best metric, we can reconsider.
+PCA_EXPLAINED_VARIANCE = 0.95
 
 
 def compare_pca_and_forward_selection(x_train, y_train, x_test, y_test):
@@ -41,8 +40,8 @@ def calculate_rmse_for_pca(x_train, y_train, x_test, y_test, explained_variance)
 
     pca_lr.fit(x_pca_train, y_train)
     pca_test_predictions = pca_lr.predict(x_pca_test)
-    accuracy = mean_squared_error(y_test, pca_test_predictions, squared=False)
-    return accuracy
+    rmse = mean_squared_error(y_test, pca_test_predictions, squared=False)
+    return rmse
 
 
 def transform_data_with_pca(x_train, x_test, explained_variance: float = 0.95):
@@ -69,7 +68,6 @@ def get_best_feature_subset(x_train, y_train, x_test, y_test, cv=10):
                                                           x_test, y_test, n, cv)
         rmse_lst.append(rmse)
         if rmse < best_rmse:
-            print(f"New best score! n={n} Best features set: {features}, RMSE: {rmse}")
             best_features = features
             best_rmse = rmse
 
@@ -97,19 +95,19 @@ def get_rmse_for_best_n_features(x_train, y_train, x_test,
     rmse = mean_squared_error(y_test, predictions, squared=False)
     return rmse, features_list
 
-
-#if __name__ == "__main__":
- #   path = "/Users/mikis/Downloads/ML project files/train.csv"
-  #  df = pd.read_csv(path)
- #   std_df = standardize_data(
-  #      df, EXTRACT_FLOAT_COLS, BOOL_COLS, CATEGORICAL_COLS, BROWSER_COL,
-   #     CategoricalEncoder.ORDINAL, MONTH_COL
-    #)
-    #filled_df = fill_missing_data(std_df, INT_COLS, DUR_COL_DICT)
-    #filled_df.dropna(inplace=True)  # TODO - temp solution to make it run
-    #y = filled_df.pop('purchase')
-    #x_train, x_test, y_train, y_test = train_test_split(
-    #    filled_df, y, test_size=0.2, random_state=42, shuffle=True
-    #)
-    #compare_pca_and_forward_selection(x_train, y_train, x_test, y_test)
-
+#
+# if __name__ == "__main__":
+#    path = "/Users/mikis/Downloads/ML project files/train.csv"
+#    df = pd.read_csv(path)
+#    std_df = standardize_data(
+#        df, EXTRACT_FLOAT_COLS, BOOL_COLS, CATEGORICAL_COLS, BROWSER_COL,
+#        CategoricalEncoder.ORDINAL, MONTH_COL
+#     )
+#     filled_df = fill_missing_data(std_df, INT_COLS, DUR_COL_DICT)
+#     filled_df.dropna(inplace=True)  # TODO - temp solution to make it run
+#     y = filled_df.pop('purchase')
+#     x_train, x_test, y_train, y_test = train_test_split(
+#        filled_df, y, test_size=0.2, random_state=42, shuffle=True
+#     )
+#     compare_pca_and_forward_selection(x_train, y_train, x_test, y_test)
+#

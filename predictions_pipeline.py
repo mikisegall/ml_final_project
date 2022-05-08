@@ -12,6 +12,7 @@ class PredictionsPipeline:
     normalization and pre-processing, dimension reduction and model application
      with all the parameters and utilities built during the research.
     """
+
     def __init__(self):
         self._model = None
 
@@ -49,8 +50,16 @@ class PredictionsPipeline:
     def remove_outliers(self, df: pd.DataFrame) -> pd.DataFrame:
         pass
 
-    def reduce_dimensions(self, df: pd.DataFrame) -> pd.DataFrame:
-        pass
+    @staticmethod
+    def reduce_dimensions(df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Using research conclusions, reducing the dataset to the
+        subset of features resulting in the best performance.
+        """
+        chosen_cols = ['num_of_product_pages', 'total_duration', 'BounceRates',
+                       'ExitRates', 'PageValues', 'closeness_to_holiday', 'Month',
+                       'device', 'user_type']
+        return df[chosen_cols]
 
     def run_label_predictions(self, df: pd.DataFrame) -> pd.Series:
         pass
