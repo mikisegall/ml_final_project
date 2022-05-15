@@ -8,6 +8,7 @@ from preprocessing_utils import CategoricalEncoder
 from preprocessing_utils import EXTRACT_FLOAT_COLS
 from preprocessing_utils import MONTH_COL
 from preprocessing_utils import standardize_data
+from remove_outliers import impute_zscore_test
 
 GROUP_NO = 35
 LABEL_COL = 'purchase'
@@ -28,7 +29,7 @@ class PredictionsPipeline:
         train_set = pd.read_csv(train_file_path)
         train_set = self._standardize_data(train_set)
         train_set = self.fill_missing_values(train_set)
-        train_set = self.remove_outliers(train_set)
+        train_set = self._remove_outliers(train_set)
         train_labels = train_set.pop(LABEL_COL)
         train_set = self._reduce_dimensions(train_set)
 
@@ -64,8 +65,9 @@ class PredictionsPipeline:
     def fill_missing_values(self, df: pd.DataFrame) -> pd.DataFrame:
         pass
 
-    def remove_outliers(self, df: pd.DataFrame) -> pd.DataFrame:
-        pass
+    @staticmethod
+    def _remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
+        return impute_zscore_test(df)
 
     @staticmethod
     def _reduce_dimensions(df: pd.DataFrame) -> pd.DataFrame:
