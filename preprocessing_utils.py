@@ -10,7 +10,8 @@ EXTRACT_FLOAT_COLS = ['info_page_duration', 'product_page_duration']
 BOOL_COLS = ['Weekend']
 MONTH_COL = 'Month'
 BROWSER_COL = 'internet_browser'
-CATEGORICAL_COLS = ['user_type', 'browser_name']
+CATEGORICAL_COLS = ['user_type', 'browser_name', 'Month']
+
 
 # TODO - consider running normalization on some of the data (happens in PCA anyways)
 
@@ -18,6 +19,7 @@ CATEGORICAL_COLS = ['user_type', 'browser_name']
 class CategoricalEncoder(enum.Enum):
     ORDINAL = 'ordinal'
     ONE_HOT = 'one_hot'
+    DUMMY = 'dummy'
 
 
 def standardize_data(
@@ -26,7 +28,7 @@ def standardize_data(
     browser_col: str,
     # Default encoder is OneHot assuming there is no ordinal relation, but it's
     # configurable
-    categorical_encoding_method: CategoricalEncoder = CategoricalEncoder.ONE_HOT,
+    categorical_encoding_method: CategoricalEncoder = CategoricalEncoder.DUMMY,
     month_col: str = None
 ) -> pd.DataFrame:
     """
@@ -44,9 +46,9 @@ def standardize_data(
     df = parse_browser_col(df, browser_col)
     # Only after we extract the browser clean name, we will encode it
 
-    if month_col:
-        mask = ~df[month_col].isna()
-        df[month_col][mask] = df[month_col][mask].apply(convert_month_name_to_num)
+    # if month_col:
+    #     mask = ~df[month_col].isna()
+    #     df[month_col][mask] = df[month_col][mask].apply(convert_month_name_to_num)
 
     for col in categorical_cols:
         df = transform_categorical_column(df, col, categorical_encoding_method)
@@ -88,8 +90,16 @@ def get_categorical_encoder(encoding_method: CategoricalEncoder):
 def transform_categorical_column(
     df: pd.DataFrame, col: str,
     encoding_method: CategoricalEncoder
-    ):
+) -> pd.DataFrame:
+    """
+    Utility to transform categorical in any desired method.
+    At first we used ordinal as default but decided instead to use dummy variables.
+     The reason is that the data is not continuous and there is no relation of
+      big-small and so this way the data represents more accurately what it is.
+      The downside is a lot of dimensions that we hope to reduce later.
+    """
     df[col].fillna('other', inplace=True)
+
     if encoding_method == CategoricalEncoder.ONE_HOT:
         encoder = OneHotEncoder()
         encoded_col = encoder.fit_transform(df[[col]])
@@ -100,9 +110,17 @@ def transform_categorical_column(
         df = pd.concat([df, encoded_col_df], axis=1)
         df.drop(columns=[col], inplace=True)
 
-    else:
+    elif encoding_method == CategoricalEncoder.ORDINAL:
         encoder = OrdinalEncoder()
         df[col] = encoder.fit_transform(df[[col]])
+
+    elif encoding_method == CategoricalEncoder.DUMMY:
+        dummy_cols = pd.get_dummies(df[col], prefix=f'{col}')
+        df.drop(col, axis=1, inplace=True)
+        df = df.join(dummy_cols)
+
+    else:
+        raise ValueError("Unknown encoding method!")
 
     return df
 
@@ -132,7 +150,8 @@ def extract_float_from_string(text: str) -> float:
 #     df2 = standardize_data(
 #         df, EXTRACT_FLOAT_COLS, BOOL_COLS,
 #         CATEGORICAL_COLS, BROWSER_COL,
-#         CategoricalEncoder.ORDINAL, MONTH_COL
+#         CategoricalEncoder.DUMMY, MONTH_COL
 #         )
 #
 #     df2
+#

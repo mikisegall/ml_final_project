@@ -15,14 +15,14 @@ We will also exclude some columns from the test, like ID, purchase and column "D
 """
 
 
-def impute_zscore_test(df: pd.DataFrame) -> pd.DataFrame:
+def impute_zscore_test(df: pd.DataFrame, z_threshold: int = 3) -> pd.DataFrame:
     """
     Imputes the z-score test to remove outliers with threshold of 3 standard diviations.
     """
     cols = [col for col in df.columns if col not in ['id', 'purchase', 'D']]
     z_scores = stats.zscore(df[cols])
     abs_z_scores = np.abs(z_scores)
-    filtered_entries = (abs_z_scores < 3).all(axis=1)
+    filtered_entries = (abs_z_scores < z_threshold).all(axis=1)
     df_wo_outliers = df[filtered_entries]
     plot_zscore_changes(df, df_wo_outliers)
     return df_wo_outliers
