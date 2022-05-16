@@ -43,7 +43,6 @@ def plot_zscore_changes(original_df: pd.DataFrame, new_df: pd.DataFrame):
         original_df[col].hist(ax=axes[i])
         new_df[col].hist(ax=axes[i])
         axes[i].title.set_text(col)
-        plt.xticks(range(0, max(new_df[col])))
         i+=1
     axes[0].legend(["With outliers", "Without outliers"])
 

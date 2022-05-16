@@ -25,13 +25,13 @@ DUR_COL_DICT = {
 
 
 def fill_missing_data(df: pd.DataFrame):
-    filled_train_data = df.copy()
-    filled_train_data.drop('D')
-    filled_train_data = fill_duration_zeros(filled_train_data)
-    filled_train_data = fill_special_cols(filled_train_data)
-    filled_train_data = impute_knn_missing_data(filled_train_data)
-    filled_train_data = fill_total_duration(filled_train_data)
-    return filled_train_data
+    filled_data = df.copy()
+    filled_data = fill_duration_zeros(filled_data)
+    filled_data = fill_special_cols(filled_data)
+    filled_data = impute_knn_missing_data(filled_data)
+    filled_data = fill_total_duration(filled_data)
+    filled_data = filled_data.drop(columns=['D'])
+    return filled_data
 
 
 def fill_duration_zeros(df: pd.DataFrame):
@@ -68,7 +68,7 @@ def fill_duration_zeros(df: pd.DataFrame):
 
 def fill_special_cols(df: pd.DataFrame):
     """
-     Fills the colums "A", "C" and "D" with values that won't interrupt with the analysis.
+     Fills the colums "A", "C"  with values that won't interrupt with the analysis.
     """
     df['A'] = df['A'].fillna('c_0')
     df['A'] = df['A'].str.extract('(\d+)', expand=False)
@@ -77,8 +77,6 @@ def fill_special_cols(df: pd.DataFrame):
     df['C'] = df['C'].str.extract('(\d+)', expand=False)
     df['C'] = df['C'].fillna(df['C'].mode()[0])
     df['C'] = df['C'].astype(float)
-
-    df["D"] = df["D"].fillna(D_FILLNA_VAL)
 
     return df
 
