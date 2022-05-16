@@ -24,6 +24,16 @@ DUR_COL_DICT = {
 }
 
 
+def fill_missing_data(df: pd.DataFrame):
+    filled_train_data = df.copy()
+    filled_train_data.drop('D')
+    filled_train_data = fill_duration_zeros(filled_train_data)
+    filled_train_data = fill_special_cols(filled_train_data)
+    filled_train_data = impute_knn_missing_data(filled_train_data)
+    filled_train_data = fill_total_duration(filled_train_data)
+    return filled_train_data
+
+
 def fill_duration_zeros(df: pd.DataFrame):
     """
      Fills duration columns with zeros where:
