@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.feature_selection import SequentialFeatureSelector
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -34,7 +34,7 @@ def compare_pca_and_forward_selection(x_train, y_train, x_test, y_test):
 
 
 def calculate_rmse_for_pca(x_train, y_train, x_test, y_test, explained_variance):
-    pca_lr = LinearRegression()
+    pca_lr = LogisticRegression()
     x_pca_train, x_pca_test = transform_data_with_pca(x_train, x_test,
                                                       explained_variance)
 
@@ -58,16 +58,16 @@ def transform_data_with_pca(x_train, x_test, explained_variance: float = 0.95):
     return x_pca_train, x_pca_test
 
 
-def get_best_feature_subset(x_train, y_train, x_test, y_test, cv=10):
+def get_best_feature_subset(x_train, y_train, x_test, y_test, cv=5):
     best_rmse = np.inf
     best_features = []
     rmse_lst = []
-    for n in range(1, x_train.shape[1]):
+    for n in range(1, round(x_train.shape[1] / 2)):
 
         rmse, features = get_rmse_for_best_n_features(x_train, y_train,
                                                           x_test, y_test, n, cv)
         rmse_lst.append(rmse)
-        if rmse < best_rmse:
+        if rmse <= best_rmse:
             best_features = features
             best_rmse = rmse
 
@@ -81,8 +81,8 @@ def get_best_feature_subset(x_train, y_train, x_test, y_test, cv=10):
 
 
 def get_rmse_for_best_n_features(x_train, y_train, x_test,
-                                 y_test, n: int, cv=10) -> (float, list):
-    lr = LinearRegression()
+                                 y_test, n: int, cv=5) -> (float, list):
+    lr = LogisticRegression()
     sfs = SequentialFeatureSelector(lr, n_features_to_select=n, cv=cv,
                                     scoring='neg_root_mean_squared_error')
     sfs.fit(x_train, y_train)
