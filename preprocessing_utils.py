@@ -10,7 +10,7 @@ EXTRACT_FLOAT_COLS = ['info_page_duration', 'product_page_duration']
 BOOL_COLS = ['Weekend']
 MONTH_COL = 'Month'
 BROWSER_COL = 'internet_browser'
-CATEGORICAL_COLS = ['user_type', 'browser_name', 'Month']
+CATEGORICAL_COLS = ['device', 'user_type', 'browser_name', 'Month']
 
 
 # TODO - consider running normalization on some of the data (happens in PCA anyways)

@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 
+from data_completeness import fill_missing_data
 from preprocessing_utils import BOOL_COLS
 from preprocessing_utils import BROWSER_COL
 from preprocessing_utils import CATEGORICAL_COLS
@@ -62,8 +63,9 @@ class PredictionsPipeline:
             month_col=MONTH_COL
         )
 
-    def fill_missing_values(self, df: pd.DataFrame) -> pd.DataFrame:
-        pass
+    @staticmethod
+    def fill_missing_values(df: pd.DataFrame) -> pd.DataFrame:
+        return fill_missing_data(df)
 
     @staticmethod
     def _remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
