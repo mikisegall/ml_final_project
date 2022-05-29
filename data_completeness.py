@@ -1,17 +1,6 @@
 import pandas as pd
 from sklearn import impute
 
-"""
-What I would add:
-1. Documentation - done
-2. Maybe seperate into smaller functions or just add comments on what happens
-    in each part. - done 
-3. After all of this - we still have a lot of rows with nans, 
-    can we complete it somehow? (I saw it happend to me but not to you in the 
-    notebook so maybe something is missing in this code) - partially done
-4. C & D consts - I'm not sure how we got the values and if they are correct,
-    maybe add documentation? I remember we didn't agree on the D value
-"""
 
 D_FILLNA_VAL = -999
 KNN_IMPUTE_NEIGHBORS = 5
