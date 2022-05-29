@@ -2,6 +2,7 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sn
 from sklearn.metrics import RocCurveDisplay, mean_squared_error
 from sklearn.metrics import accuracy_score
@@ -10,7 +11,8 @@ from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import StratifiedKFold
 
 
-def estimate_model_performance(model, model_name, test_data, test_labels, n_splits):
+def estimate_model_performance(model, model_name: str, test_data: pd.DataFrame,
+                               test_labels: pd.DataFrame, n_splits: int):
     """
     Estimate each fitted model version with the following output:
     - Print: runtime, Accuracy
@@ -40,7 +42,8 @@ def estimate_model_performance(model, model_name, test_data, test_labels, n_spli
     plot_roc_curve_for_k_fold(model, model_name, test_data, test_labels, n_splits)
 
 
-def plot_roc_curve_for_k_fold(model, model_name, test_data, test_labels, n_splits):
+def plot_roc_curve_for_k_fold(model, model_name: str, test_data: pd.DataFrame,
+                              test_labels: pd.DataFrame, n_splits: int):
     """
     A function that for a given untrained model, splits it into n splits and
     calculated the ROC curve for each validation set, displaying the results all
@@ -56,7 +59,7 @@ def plot_roc_curve_for_k_fold(model, model_name, test_data, test_labels, n_split
     fig, ax = plt.subplots()
     plt.figure(figsize=(10,10))
     for i, (train, test) in enumerate(cv.split(test_data, test_labels)):
-        # Calculate ROC curve per data chunch and plot its curve
+        # Calculate ROC curve per data chunk and plot its curve
         model.fit(test_data.iloc[list(train)], test_labels.iloc[list(train)])
         viz = RocCurveDisplay.from_estimator(
             model,

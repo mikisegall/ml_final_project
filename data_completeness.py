@@ -15,7 +15,7 @@ What I would add:
 
 D_FILLNA_VAL = -999
 KNN_IMPUTE_NEIGHBORS = 5
-INT_COLS = ['device', 'num_of_admin_pages', 'num_of_info_pages',
+INT_COLS = ['num_of_admin_pages', 'num_of_info_pages',
             'num_of_product_pages', 'Region']
 DUR_COL_DICT = {
     'info_page_duration': 'num_of_info_pages',
