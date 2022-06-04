@@ -29,7 +29,6 @@ def standardize_data(
     # Default encoder is OneHot assuming there is no ordinal relation, but it's
     # configurable
     categorical_encoding_method: CategoricalEncoder = CategoricalEncoder.DUMMY,
-    month_col: str = None
 ) -> pd.DataFrame:
     """
     Runs a set of data transformation on columns not standartized by
@@ -45,10 +44,6 @@ def standardize_data(
 
     df = parse_browser_col(df, browser_col)
     # Only after we extract the browser clean name, we will encode it
-
-    # if month_col:
-    #     mask = ~df[month_col].isna()
-    #     df[month_col][mask] = df[month_col][mask].apply(convert_month_name_to_num)
 
     for col in categorical_cols:
         df = transform_categorical_column(df, col, categorical_encoding_method)
