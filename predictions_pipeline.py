@@ -7,13 +7,13 @@ from preprocessing_utils import BROWSER_COL
 from preprocessing_utils import CATEGORICAL_COLS
 from preprocessing_utils import CategoricalEncoder
 from preprocessing_utils import EXTRACT_FLOAT_COLS
-from preprocessing_utils import MONTH_COL
 from preprocessing_utils import standardize_data
 from remove_outliers import impute_zscore_test
 
 GROUP_NO = 35
 LABEL_COL = 'purchase'
 RESULTS_LABEL_COL = 'predict_prob'
+Z_SCORE_THRESHOLD = 5.5
 
 
 class PredictionsPipeline:
@@ -24,18 +24,18 @@ class PredictionsPipeline:
     """
 
     def __init__(self):
-        self._model = None
+        # Here will be the chosen model with the chosen hyperparams.
+        self._model = LinearRegression()
 
     def train(self, train_file_path: str):
         train_set = pd.read_csv(train_file_path)
+        train_labels = train_set.pop(LABEL_COL)
+
         train_set = self._standardize_data(train_set)
         train_set = self.fill_missing_values(train_set)
-        train_set = self._remove_outliers(train_set)
-        train_labels = train_set.pop(LABEL_COL)
         train_set = self._reduce_dimensions(train_set)
+        train_set = self._remove_outliers(train_set)
 
-        # Fit chosen model with chosen params (this is example)
-        self._model = LinearRegression()
         self._model.fit(train_set, train_labels)
 
     def predict_to_file(self, test_file_path: str, output_file_path: str = None):
@@ -59,8 +59,7 @@ class PredictionsPipeline:
             bool_cols=BOOL_COLS,
             categorical_cols=CATEGORICAL_COLS,
             browser_col=BROWSER_COL,
-            categorical_encoding_method=CategoricalEncoder.ORDINAL,
-            month_col=MONTH_COL
+            categorical_encoding_method=CategoricalEncoder.DUMMY
         )
 
     @staticmethod
@@ -69,7 +68,7 @@ class PredictionsPipeline:
 
     @staticmethod
     def _remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
-        return impute_zscore_test(df)
+        return impute_zscore_test(df, Z_SCORE_THRESHOLD)
 
     @staticmethod
     def _reduce_dimensions(df: pd.DataFrame) -> pd.DataFrame:
