@@ -35,7 +35,7 @@ def plot_zscore_changes(original_df: pd.DataFrame, new_df: pd.DataFrame):
     print(f"Original amount of rows: {original_df.shape[0]}")
     print(f"New amount of rows: {new_df.shape[0]}")
 
-    fig, axes = plt.subplots(len(new_df.columns), 1, figsize=(10, 30))
+    fig, axes = plt.subplots(len(new_df.columns), 1, figsize=(30, 50))
     fig.tight_layout(pad=1.5)
     
     i=0
