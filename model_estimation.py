@@ -1,36 +1,41 @@
-import time
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sn
-from sklearn.metrics import RocCurveDisplay, mean_squared_error
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import RocCurveDisplay
 from sklearn.metrics import auc
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import cross_val_predict
+from sklearn.model_selection import cross_validate
 
 
-def estimate_model_performance(model, model_name: str, test_data: pd.DataFrame,
-                               test_labels: pd.DataFrame, n_splits: int):
+def estimate_model_performance(
+    model, model_name: str, data: pd.DataFrame,
+    labels: pd.DataFrame, n_splits: int
+):
     """
-    Estimate each fitted model version with the following output:
-    - Print: runtime, Accuracy
+    Estimate each model version with the following output:
+    - Print: Accuracy,  MSE
     - Plot: Confusion Matrix, ROC curve for every K-Fold validation
     """
-    # Run predictions and calculate runtime
-    start_time = time.time()
-    predictions = model.predict(test_data)
-    end_time = time.time()
-    runtime = end_time - start_time
-    print(f'Model predictions runtime: {runtime}s')
-
     # Evaluate the predictions
-    confusion_matrix_res = confusion_matrix(test_labels, predictions)
-    accuracy = accuracy_score(test_labels, predictions)
-    mse = mean_squared_error(test_labels, predictions)
-    print(f"Accuracy score: {accuracy}")
-    print(f"MSE: {mse}")
+    scores = cross_validate(
+        model, data, labels,
+        scoring=['accuracy', 'neg_mean_squared_error'], cv=n_splits
+    )
+    print(
+        "%0.2f accuracy with a standard deviation of %0.2f" % (
+            scores['test_accuracy'].mean(), scores['test_accuracy'].std())
+    )
+    print(
+        "%0.2f MSE with a standard deviation of %0.2f" % (
+            -1 * scores['test_neg_mean_squared_error'].mean(),
+            scores['test_neg_mean_squared_error'].std())
+    )
+
+    predictions = cross_val_predict(model, data, labels, cv=10)
+    confusion_matrix_res = confusion_matrix(labels, predictions)
 
     plt.figure()
     sn.set(font_scale=1.4)  # for label size
@@ -39,11 +44,13 @@ def estimate_model_performance(model, model_name: str, test_data: pd.DataFrame,
         annot=True, annot_kws={"size": 16}
     )
 
-    plot_roc_curve_for_k_fold(model, model_name, test_data, test_labels, n_splits)
+    plot_roc_curve_for_k_fold(model, model_name, data, labels, n_splits)
 
 
-def plot_roc_curve_for_k_fold(model, model_name: str, test_data: pd.DataFrame,
-                              test_labels: pd.DataFrame, n_splits: int):
+def plot_roc_curve_for_k_fold(
+    model, model_name: str, data: pd.DataFrame,
+    labels: pd.DataFrame, n_splits: int
+):
     """
     A function that for a given untrained model, splits it into n splits and
     calculated the ROC curve for each validation set, displaying the results all
@@ -57,14 +64,14 @@ def plot_roc_curve_for_k_fold(model, model_name: str, test_data: pd.DataFrame,
     mean_fpr = np.linspace(0, 1, 100)
 
     fig, ax = plt.subplots()
-    plt.figure(figsize=(10,10))
-    for i, (train, test) in enumerate(cv.split(test_data, test_labels)):
+    plt.figure(figsize=(10, 10))
+    for i, (train, test) in enumerate(cv.split(data, labels)):
         # Calculate ROC curve per data chunk and plot its curve
-        model.fit(test_data.iloc[list(train)], test_labels.iloc[list(train)])
+        model.fit(data.iloc[list(train)], labels.iloc[list(train)])
         viz = RocCurveDisplay.from_estimator(
             model,
-            test_data.iloc[list(train)],
-            test_labels.iloc[list(train)],
+            data.iloc[list(train)],
+            labels.iloc[list(train)],
             name="ROC fold {}".format(i),
             alpha=0.3,
             lw=1,

@@ -15,7 +15,7 @@ We will also exclude some columns from the test, like ID, purchase and column "D
 """
 
 
-def impute_zscore_test(df: pd.DataFrame, z_threshold: int = 3) -> pd.DataFrame:
+def impute_zscore_test(df: pd.DataFrame, z_threshold: float = 3) -> pd.DataFrame:
     """
     Imputes the z-score test to remove outliers with threshold of 3 standard diviations.
     """
