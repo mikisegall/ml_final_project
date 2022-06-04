@@ -30,7 +30,7 @@ def compare_pca_and_forward_selection(model, x_train, y_train, x_test, y_test):
         print("PCA scored best. Better use PCA to reduce dimensions.")
     else:
         print(f"Forward Selection scored best. "
-              f"Features to use: {forward_selection_features}")
+              f"Features to use: {forward_selection_features.tolist()}")
 
 
 def calculate_auc_for_pca(model, x_train, y_train, x_test, y_test, explained_variance):
