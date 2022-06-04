@@ -34,12 +34,11 @@ def compare_pca_and_forward_selection(model, x_train, y_train, x_test, y_test):
 
 
 def calculate_rmse_for_pca(model, x_train, y_train, x_test, y_test, explained_variance):
-    pca_lr = model
     x_pca_train, x_pca_test = transform_data_with_pca(x_train, x_test,
                                                       explained_variance)
 
-    pca_lr.fit(x_pca_train, y_train)
-    pca_test_predictions = pca_lr.predict(x_pca_test)
+    model.fit(x_pca_train, y_train)
+    pca_test_predictions = model.predict(x_pca_test)
     auc = roc_auc_score(y_test, pca_test_predictions)
     return auc
 
