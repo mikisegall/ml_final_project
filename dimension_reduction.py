@@ -20,8 +20,8 @@ def compare_pca_and_forward_selection(model, x_train, y_train, x_test, y_test):
     We will train both of them and compare results of PCA vs. best forward selection,
      and based on the results choose what model dimension to try in the next phase (training).
     """
-    pca_auc = calculate_rmse_for_pca(model, x_train, y_train, x_test,
-                                      y_test, PCA_EXPLAINED_VARIANCE)
+    pca_auc = calculate_auc_for_pca(model, x_train, y_train, x_test,
+                                    y_test, PCA_EXPLAINED_VARIANCE)
     print(f"PCA AUC: {pca_auc}")
     forward_selection_auc, forward_selection_features = \
         get_best_feature_subset(model, x_train, y_train, x_test, y_test)
@@ -33,7 +33,7 @@ def compare_pca_and_forward_selection(model, x_train, y_train, x_test, y_test):
               f"Features to use: {forward_selection_features}")
 
 
-def calculate_rmse_for_pca(model, x_train, y_train, x_test, y_test, explained_variance):
+def calculate_auc_for_pca(model, x_train, y_train, x_test, y_test, explained_variance):
     x_pca_train, x_pca_test = transform_data_with_pca(x_train, x_test,
                                                       explained_variance)
 
