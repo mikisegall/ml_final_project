@@ -1,7 +1,10 @@
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.decomposition import PCA
+from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
 
 from data_completeness import fill_missing_data
+from dimension_reduction import PCA_EXPLAINED_VARIANCE
 from preprocessing_utils import BOOL_COLS
 from preprocessing_utils import BROWSER_COL
 from preprocessing_utils import CATEGORICAL_COLS
@@ -24,25 +27,27 @@ class PredictionsPipeline:
     """
 
     def __init__(self):
-        # Here will be the chosen model with the chosen hyperparams.
-        self._model = LinearRegression()
+        self._model = MLPClassifier(hidden_layer_sizes=(100,), alpha=1)
+        self._pca = PCA(PCA_EXPLAINED_VARIANCE)
 
     def train(self, train_file_path: str):
         train_set = pd.read_csv(train_file_path)
         train_labels = train_set.pop(LABEL_COL)
 
         train_set = self._standardize_data(train_set)
-        train_set = self.fill_missing_values(train_set)
-        train_set = self._reduce_dimensions(train_set)
+        train_set = self._drop_chosen_columns(train_set)
+        train_set = self._fill_missing_values(train_set)
+        train_set = self._reduce_dimensions(train_set, should_fit=True)
         train_set = self._remove_outliers(train_set)
 
         self._model.fit(train_set, train_labels)
 
-    def predict_to_file(self, test_file_path: str, output_file_path: str = None):
+    def predict_to_file(self, test_file_path: str, output_file_path: str):
         original_test_set = pd.read_csv(test_file_path)
         processed_test_set = self._standardize_data(original_test_set)
-        processed_test_set = self.fill_missing_values(processed_test_set)
-        processed_test_set = self._reduce_dimensions(processed_test_set)
+        processed_test_set = self._drop_chosen_columns(processed_test_set)
+        processed_test_set = self._fill_missing_values(processed_test_set)
+        processed_test_set = self._reduce_dimensions(processed_test_set, should_fit=False)
         predictions = self.run_label_predictions(processed_test_set)
 
         # Writes the output into a CSV in the requested format
@@ -63,7 +68,7 @@ class PredictionsPipeline:
         )
 
     @staticmethod
-    def fill_missing_values(df: pd.DataFrame) -> pd.DataFrame:
+    def _fill_missing_values(df: pd.DataFrame) -> pd.DataFrame:
         return fill_missing_data(df)
 
     @staticmethod
@@ -71,15 +76,30 @@ class PredictionsPipeline:
         return impute_zscore_test(df, Z_SCORE_THRESHOLD)
 
     @staticmethod
-    def _reduce_dimensions(df: pd.DataFrame) -> pd.DataFrame:
+    def _drop_chosen_columns(df: pd.DataFrame) -> pd.DataFrame:
         """
-        Using research conclusions, reducing the dataset to the
-        subset of features resulting in the best performance.
+        Dropping columns chosen along the way by the following methods:
+        - Very high correlation, features that come from same origin
+         as other features left in the data.
+        - ID - just an index without extra data.
+        - D - Mostly empty and doesn't explain our label much.
         """
-        chosen_cols = ['num_of_product_pages', 'total_duration', 'BounceRates',
-                       'ExitRates', 'PageValues', 'closeness_to_holiday', 'Month',
-                       'device', 'user_type']
-        return df[chosen_cols]
+        cols_to_drop = ['id', 'BounceRates', 'admin_page_duration',
+                        'product_page_duration', 'info_page_duration', 'D']
+        return df.drop(columns=cols_to_drop)
+
+    def _reduce_dimensions(self, df: pd.DataFrame,
+                           should_fit: bool = False) -> pd.DataFrame:
+        """
+        Using research conclusions, reducing the dataset using PCA with
+         explained_variance=0.99, best feature selection method for MLP.
+        """
+        scaler = StandardScaler()
+        normalized_df = scaler.fit_transform(df)
+
+        if should_fit:
+            self._pca.fit(normalized_df)
+        return self._pca.transform(normalized_df)
 
     def run_label_predictions(self, df: pd.DataFrame) -> pd.Series:
-        pass
+        return self._model.predict_proba(df)[:, 1]
