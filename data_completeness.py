@@ -2,7 +2,6 @@ import pandas as pd
 from sklearn import impute
 
 
-D_FILLNA_VAL = -999
 KNN_IMPUTE_NEIGHBORS = 5
 INT_COLS = ['num_of_admin_pages', 'num_of_info_pages',
             'num_of_product_pages', 'Region']
