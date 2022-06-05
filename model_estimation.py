@@ -9,6 +9,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import cross_val_predict
 from sklearn.model_selection import cross_validate
 
+#TODO: Add auc score for training set
 
 def estimate_model_performance(
     model, model_name: str, data: pd.DataFrame,
