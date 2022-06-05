@@ -19,7 +19,7 @@ def impute_zscore_test(df: pd.DataFrame, z_threshold: float = 3) -> pd.DataFrame
     """
     Imputes the z-score test to remove outliers with threshold of 3 standard diviations.
     """
-    cols = [col for col in df.columns if col not in ['id', 'purchase', 'D']]
+    cols = [col for col in df.columns if col not in ['id', 'purchase']] # we don't want the Zscore test to remove data based on the ID and the purchase columns
     z_scores = stats.zscore(df[cols])
     abs_z_scores = np.abs(z_scores)
     filtered_entries = (abs_z_scores < z_threshold).all(axis=1)
@@ -40,9 +40,10 @@ def plot_zscore_changes(original_df: pd.DataFrame, new_df: pd.DataFrame):
     
     i=0
     for col in new_df.columns:
-        original_df[col].hist(ax=axes[i])
-        new_df[col].hist(ax=axes[i])
+
+        plt.hist([original_df[col], new_df[col]])
         axes[i].title.set_text(col)
         i+=1
+
     axes[0].legend(["With outliers", "Without outliers"])
 

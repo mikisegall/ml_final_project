@@ -9,7 +9,6 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import cross_val_predict
 from sklearn.model_selection import cross_validate
 
-#TODO: Add auc score for training set
 
 def estimate_model_performance(
     model, model_name: str, data: pd.DataFrame,
@@ -23,10 +22,10 @@ def estimate_model_performance(
     # Evaluate the predictions
     scores = cross_validate(
         model, data, labels,
-        scoring=['accuracy', 'neg_mean_squared_error'], cv=n_splits
+        scoring=['accuracy', 'neg_mean_squared_error'], cv=n_splits, return_train_score=True
     )
     print(
-        "%0.2f accuracy with a standard deviation of %0.2f" % (
+        "%0.2f test accuracy with a standard deviation of %0.2f" % (
             scores['test_accuracy'].mean(), scores['test_accuracy'].std())
     )
     print(
@@ -34,6 +33,11 @@ def estimate_model_performance(
             -1 * scores['test_neg_mean_squared_error'].mean(),
             scores['test_neg_mean_squared_error'].std())
     )
+    print(
+        "%0.2f train accuracy with a standard deviation of %0.2f" % (
+        scores['train_accuracy'].mean(), scores['train_accuracy'].std())
+    )
+
 
     predictions = cross_val_predict(model, data, labels, cv=10)
     confusion_matrix_res = confusion_matrix(labels, predictions)

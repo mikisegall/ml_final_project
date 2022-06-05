@@ -19,7 +19,6 @@ def fill_missing_data(df: pd.DataFrame):
     filled_data = fill_special_cols(filled_data)
     filled_data = impute_knn_missing_data(filled_data)
     filled_data = fill_total_duration(filled_data)
-    filled_data = filled_data.drop(columns=['D'])
     return filled_data
 
 
