@@ -42,7 +42,7 @@ class PredictionsPipeline:
 
         self._model.fit(train_set, train_labels)
 
-    def predict_to_file(self, test_file_path: str, output_file_path: str = None):
+    def predict_to_file(self, test_file_path: str, output_file_path: str):
         original_test_set = pd.read_csv(test_file_path)
         processed_test_set = self._standardize_data(original_test_set)
         processed_test_set = self._drop_chosen_columns(processed_test_set)
