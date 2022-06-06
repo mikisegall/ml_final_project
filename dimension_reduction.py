@@ -71,21 +71,3 @@ def get_best_feature_subset(model, x_train, y_train, x_test, y_test, cv=5):
     predictions = model.predict(reduced_x_test)
     auc = roc_auc_score(y_test, predictions)
     return auc, features_list
-
-
-
-#
-# if __name__ == "__main__":
-#    path = "/Users/mikis/Downloads/ML project files/train.csv"
-#    df = pd.read_csv(path)
-#    std_df = standardize_data(
-#        df, EXTRACT_FLOAT_COLS, BOOL_COLS, CATEGORICAL_COLS, BROWSER_COL,
-#        CategoricalEncoder.ORDINAL, MONTH_COL
-#     )
-#     filled_df = fill_missing_data(std_df, INT_COLS, DUR_COL_DICT)
-#     filled_df.dropna(inplace=True)  # TODO - temp solution to make it run
-#     y = filled_df.pop('purchase')
-#     x_train, x_test, y_train, y_test = train_test_split(
-#        filled_df, y, test_size=0.2, random_state=42, shuffle=True
-#     )
-#     compare_pca_and_forward_selection(x_train, y_train, x_test, y_test)

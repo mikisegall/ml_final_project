@@ -118,6 +118,11 @@ def transform_categorical_column(
 
 
 def convert_month_name_to_num(month_name: str) -> int:
+    """
+    Convert every month to its month index.
+    We've decided not to use this function as the month don't have size
+     order and we prefer to treat them individually as dummy variables.
+    """
     month_number = strptime(month_name[:3], '%b').tm_mon
     return month_number
 
@@ -134,16 +139,3 @@ def extract_float_from_string(text: str) -> float:
     if not nums:
         raise ValueError(f"String doesn't contain float in it: {text}")
     return float(nums[0])
-
-#
-# if __name__ == "__main__":
-#     path = "/Users/mikis/Downloads/ML project files/train.csv"
-#     df = pd.read_csv(path)
-#     df2 = standardize_data(
-#         df, EXTRACT_FLOAT_COLS, BOOL_COLS,
-#         CATEGORICAL_COLS, BROWSER_COL,
-#         CategoricalEncoder.DUMMY, MONTH_COL
-#         )
-#
-#     df2
-#

@@ -24,6 +24,7 @@ class PredictionsPipeline:
     """
 
     def __init__(self):
+        # Best model and features selected in research
         self._model = RandomForestClassifier(n_estimators=90, min_samples_split=3, max_depth=9)
         self._features_to_select = ['num_of_admin_pages', 'PageValues', 'closeness_to_holiday',
          'Weekend', 'device_1.0', 'device_4.0', 'device_5.0', 'device_6.0', 'device_7.0',
@@ -54,7 +55,7 @@ class PredictionsPipeline:
         original_test_set[RESULTS_LABEL_COL] = predictions
         output_file = output_file_path if output_file_path \
             else f'Submission_group_{GROUP_NO}.csv'
-        original_test_set[['id', RESULTS_LABEL_COL]].to_csv(output_file)
+        original_test_set[['id', RESULTS_LABEL_COL]].to_csv(output_file, index=False)
 
     @staticmethod
     def _standardize_data(df: pd.DataFrame) -> pd.DataFrame:
