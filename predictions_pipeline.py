@@ -73,7 +73,7 @@ class PredictionsPipeline:
 
     @staticmethod
     def _remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
-        return impute_zscore_test(df, Z_SCORE_THRESHOLD)
+        return impute_zscore_test(df, Z_SCORE_THRESHOLD, plot=False)
 
     @staticmethod
     def _drop_chosen_columns(df: pd.DataFrame) -> pd.DataFrame:
